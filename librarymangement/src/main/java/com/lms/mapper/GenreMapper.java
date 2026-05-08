@@ -3,12 +3,19 @@ package com.lms.mapper;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
+import org.springframework.stereotype.Component;
+
 import com.lms.Model.Genre;
 import com.lms.payload.dto.GenreDto;
+import com.lms.repository.GenreRepository;
 
+import lombok.RequiredArgsConstructor;
+
+@Component
+@RequiredArgsConstructor
 public class GenreMapper {
-
-    public static GenreDto toDto(Genre savedGenre) {
+    private final GenreRepository genreRepository;
+    public GenreDto toDto(Genre savedGenre) {
         if (savedGenre == null) {
             return null;
         }
@@ -35,7 +42,23 @@ public class GenreMapper {
         }
         
         return dto;
+    }
+    public Genre toEntity(GenreDto genreDto) {
+        if (genreDto == null) {
+            return null;
+        }
+        Genre genre = Genre.builder()
+                .code(genreDto.getCode())
+                .name(genreDto.getName())
+                .description(genreDto.getDescription())
+                .displayOrder(genreDto.getDisplayOrder())
+                .active(true)
+                .build();
 
-        
+        if (genreDto.getParentGenreId() != null) {
+            genreRepository.findById(genreDto.getParentGenreId())
+                    .ifPresent(genre::setParentGenre);
+        }
+        return genre;
     }
 }

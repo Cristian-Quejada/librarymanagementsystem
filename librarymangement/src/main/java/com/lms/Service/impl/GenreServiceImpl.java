@@ -20,7 +20,7 @@ public class GenreServiceImpl implements GenreService {
 
     private final GenreRepository genreRepository;
 
-    
+    private final GenreMapper genreMapper;
 
     @Override
     public GenreDto createGenre(GenreDto genreDto) {
@@ -43,20 +43,7 @@ public class GenreServiceImpl implements GenreService {
 
         Genre savedGenre = genreRepository.save(genre);
 
-        GenreDto dto = GenreMapper.toDto(savedGenre);
-
-                //dto.setSubGenres(savedGenre.getSubGenres().stream()
-                //        .filter(subGenre -> subGenre.getActive())
-                //        .map(subGenre -> GenreDto.builder()
-                //                .id(subGenre.getId())
-                //                .code(subGenre.getCode())
-                //                .name(subGenre.getName())
-                //                .description(subGenre.getDescription())
-                //                .displayOrder(subGenre.getDisplayOrder())
-                //                .active(subGenre.getActive())
-                //                .build())
-                //        .toList());
-       return dto;
+        return genreMapper.toDto(savedGenre);
     }
 
 
@@ -65,7 +52,7 @@ public class GenreServiceImpl implements GenreService {
     public List<GenreDto> getAllGenres() {
         
         return genreRepository.findAll().stream()
-                .map(GenreMapper::toDto)
+                .map(genreMapper::toDto)
                 .collect(Collectors.toList());
     }
 
