@@ -1,9 +1,13 @@
 package com.lms.payload.dto;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -12,6 +16,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class GenreDto {
 
     private Long id;
@@ -29,4 +34,16 @@ public class GenreDto {
     private Integer displayOrder;
 
     private Boolean active;
+
+    private Long parentGenreId;
+
+    private String parentGenreName;
+
+    private List<GenreDto> subGenres;
+
+    private Long bookCount;
+
+    private LocalDateTime createdAt;
+
+    private LocalDateTime updatedAt;
 }

@@ -1,12 +1,16 @@
 package com.lms.Service;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
-import com.lms.Model.Genre;
+import com.lms.payload.dto.GenreDto;
 
 @Service
 public interface GenreService {
 
 
-    Genre createGenre(Genre genre);
+    GenreDto createGenre(GenreDto genre);
+
+    List<GenreDto> getAllGenres();
 }
