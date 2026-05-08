@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.lms.Model.Genre;
 import com.lms.Service.GenreService;
+import com.lms.exception.GenreException;
 import com.lms.mapper.GenreMapper;
 import com.lms.payload.dto.GenreDto;
 import com.lms.repository.GenreRepository;
@@ -25,21 +26,7 @@ public class GenreServiceImpl implements GenreService {
     @Override
     public GenreDto createGenre(GenreDto genreDto) {
 
-       // return genreRepository.save(genreDto);
-
-       Genre genre = Genre.builder()
-                .code(genreDto.getCode())
-                .name(genreDto.getName())
-                .description(genreDto.getDescription())
-                .displayOrder(genreDto.getDisplayOrder())
-                .active(true)
-                .build();
-
-        if (genreDto.getParentGenreId() != null) {
-            Genre parentGenre = genreRepository.findById(genreDto.getParentGenreId())
-                    .orElseThrow(() -> new RuntimeException("Parent genre not found with id: " + genreDto.getParentGenreId()));
-            genre.setParentGenre(parentGenre);
-        }
+       Genre genre = genreMapper.toEntity(genreDto);
 
         Genre savedGenre = genreRepository.save(genre);
 
@@ -54,6 +41,85 @@ public class GenreServiceImpl implements GenreService {
         return genreRepository.findAll().stream()
                 .map(genreMapper::toDto)
                 .collect(Collectors.toList());
+    }
+
+
+
+    @Override
+    public GenreDto getGenreById(Long genreId) throws GenreException {
+        Genre genre = genreRepository.findById(genreId)
+                .orElseThrow(() -> new GenreException("Genre not found with id: " + genreId));
+
+        return genreMapper.toDto(genre);
+    }
+
+
+
+    @Override
+    public GenreDto updateGenre(Long genreId, GenreDto genreDto) throws GenreException {
+
+        Genre existingGenre = genreRepository.findById(genreId)
+                .orElseThrow(() -> new GenreException("Genre not found with id: " + genreId));
+
+        genreMapper.updateEntityFromDto(genreDto, existingGenre);
+        Genre updatedGenre = genreRepository.save(existingGenre);
+        return genreMapper.toDto(updatedGenre);
+    }
+
+
+
+    @Override
+    public void deleteGenre(Long genreId) throws GenreException {
+
+        Genre existingGenre = genreRepository.findById(genreId)
+                .orElseThrow(() -> new GenreException("Genre not found with id: " + genreId));
+
+                existingGenre.setActive(false);
+                genreRepository.save(existingGenre);
+
+    }
+
+
+
+    @Override
+    public void hardDeleteGenre(Long genreId) throws GenreException {
+        
+        Genre existingGenre = genreRepository.findById(genreId)
+                .orElseThrow(() -> new GenreException("Genre not found with id: " + genreId));
+
+                genreRepository.delete(existingGenre);
+    }
+
+
+
+    @Override
+    public List<GenreDto> getAllActiveGenresWithSubGenres() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getAllActiveGenresWithSubGenres'");
+    }
+
+
+
+    @Override
+    public List<GenreDto> getTopLevelGenres() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getTopLevelGenres'");
+    }
+
+
+
+    @Override
+    public long getTotalActiveGenresCount() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getTotalActiveGenresCount'");
+    }
+
+
+
+    @Override
+    public long getBookCountByGenreId(Long genreId) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getBookCountByGenreId'");
     }
 
 }
