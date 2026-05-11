@@ -1,5 +1,6 @@
 package com.lms.mapper;
 
+import java.util.List;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
@@ -78,5 +79,10 @@ public class GenreMapper {
             genreRepository.findById(dto.getParentGenreId())
                     .ifPresent(existingGenre::setParentGenre);
         }
+    }
+
+    public List<GenreDto> toDtoList(List<Genre> genreList) {
+     
+        return genreList.stream().map(genre -> toDto(genre)).collect(Collectors.toList());
     }
 }

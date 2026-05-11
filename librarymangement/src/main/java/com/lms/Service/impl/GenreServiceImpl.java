@@ -94,32 +94,36 @@ public class GenreServiceImpl implements GenreService {
 
     @Override
     public List<GenreDto> getAllActiveGenresWithSubGenres() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getAllActiveGenresWithSubGenres'");
+        List<Genre> topLevelGenres = genreRepository
+                    .findByParentGenreIsNullAndActiveTrueOrderByDisplayOrderAsc();
+
+                    return genreMapper.toDtoList(topLevelGenres);
     }
 
 
 
     @Override
     public List<GenreDto> getTopLevelGenres() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getTopLevelGenres'");
+        List<Genre> topLevelGenres = genreRepository
+                    .findByParentGenreIsNullAndActiveTrueOrderByDisplayOrderAsc();
+
+                    return genreMapper.toDtoList(topLevelGenres);
     }
 
 
 
     @Override
     public long getTotalActiveGenresCount() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getTotalActiveGenresCount'");
+
+        return genreRepository.countByActiveTrue();
     }
 
 
 
     @Override
     public long getBookCountByGenreId(Long genreId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getBookCountByGenreId'");
+        return 0;
+     
     }
 
 }
