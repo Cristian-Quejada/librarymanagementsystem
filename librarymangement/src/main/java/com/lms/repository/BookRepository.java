@@ -16,13 +16,24 @@ public interface BookRepository extends JpaRepository<Book, Long> {
 
     Boolean existsByIsbn(String isbn);
 
-    @Query("select b from Book b where" + "b.active = true and " + 
-        "(coalesce(:searchTerm) is null or lower(b.title) like lower(concat('%', :searchTerm, '%')) or lower(b.author) like lower(concat('%', :searchTerm, '%'))) and " +
-        "(coalesce(:genreId) is null or b.genre.id = :genreId) and " +
-        "(coalesce(:availableOnly) is null or (b.availableCopies > 0))")
+    @Query("select b from Book b where" 
+            + ":searchTerm is null OR " 
+            + "(lower(b.title) like lower(concat('%', :searchTerm, '%')) OR "
+            + "lower(b.author) like lower(concat('%', :searchTerm, '%')) OR "
+            + "lower(b.isbn) like lower(concat('%', :searchTerm, '%'))) OR "
+            + ":genreId is null OR b.genre.id = :genreId) AND"
+            + ":availableOnly == false OR (b.availableCopies > 0) AND "
+            + "b.active = true ")
+            
     Page<Book> searchBooksWithFilters (
         @Param("searchTerm") String searchTerm, 
         @Param("genreId") Long genreId, 
         @Param("availableOnly") Boolean availableOnly,
         Pageable pageable);
+
+
+    long countByActiveTrue();
+
+    @Query("select count(b) from Book b where b.availableCopies > 0 and b.active = true")
+    long countAvailableCopies();
 }
