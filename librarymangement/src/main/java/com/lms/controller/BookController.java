@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.lms.Service.BookService;
@@ -74,6 +75,28 @@ public class BookController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping
+    public ResponseEntity<PageResponse<BookDto>> searchBooks(
+            @RequestParam(required = false) Long genreId,
+            @RequestParam(required = false) Boolean availableOnly,
+            @RequestParam(defaultValue = "true") Boolean activeOnly,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size,
+            @RequestParam(defaultValue = "createdAt") String sortBy,
+            @RequestParam(defaultValue = "desc") String sortDirection) {
+
+        BookSearchRequest searchRequest = new BookSearchRequest();
+        searchRequest.setGenreId(genreId);
+        searchRequest.setAvailableOnly(availableOnly);
+        searchRequest.setPage(page);
+        searchRequest.setSize(size);
+        searchRequest.setSortBy(sortBy);
+        searchRequest.setSortDirection(sortDirection);
+        PageResponse<BookDto> books = bookService.searchBooksWithFilters(searchRequest);
+        return ResponseEntity.ok(books);
+            
+    }
+
     @PostMapping("/search")
     public ResponseEntity<PageResponse<BookDto>> advancedSearch(@RequestBody BookSearchRequest searchRequest) {
         
@@ -82,6 +105,7 @@ public class BookController {
         
     }
 
+    @GetMapping("/state")
     public ResponseEntity<BookStateResponse> getBookState() {
         long totalActiveBooks = bookService.getTotalActiveBooks();
         long totalAvailableBooks = bookService.getTotalAvailableBooks();
