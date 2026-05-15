@@ -36,4 +36,6 @@ public interface BookRepository extends JpaRepository<Book, Long> {
 
     @Query("select count(b) from Book b where b.availableCopies > 0 and b.active = true")
     long countAvailableCopies();
+
+    long countAvailableBooks();
 }
