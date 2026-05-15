@@ -21,9 +21,10 @@ public interface BookRepository extends JpaRepository<Book, Long> {
             + "(lower(b.title) like lower(concat('%', :searchTerm, '%')) OR "
             + "lower(b.author) like lower(concat('%', :searchTerm, '%')) OR "
             + "lower(b.isbn) like lower(concat('%', :searchTerm, '%'))) OR "
-            + ":genreId is null OR b.genre.id = :genreId) AND"
-            + ":availableOnly == false OR (b.availableCopies > 0) AND "
-            + "b.active = true ")
+            + "(:genreId is null OR b.genre.id = :genreId) AND "
+            + "(:availableOnly = false OR b.availableCopies > 0) AND "
+            + "b.active = true "
+        )
             
     Page<Book> searchBooksWithFilters (
         @Param("searchTerm") String searchTerm, 
@@ -35,7 +36,6 @@ public interface BookRepository extends JpaRepository<Book, Long> {
     long countByActiveTrue();
 
     @Query("select count(b) from Book b where b.availableCopies > 0 and b.active = true")
-    long countAvailableCopies();
-
     long countAvailableBooks();
+
 }
