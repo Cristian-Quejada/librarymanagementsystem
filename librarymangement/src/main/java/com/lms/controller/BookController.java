@@ -53,7 +53,7 @@ public class BookController {
     @PutMapping("/{bookId}")
     public ResponseEntity<BookDto> updateBook(
             @PathVariable Long bookId, 
-            @Valid @RequestBody BookDto bookDto) throws BookException {
+            @RequestBody BookDto bookDto) throws BookException {
             
             BookDto updatedBook = bookService.updateBook(bookId, bookDto);
             return ResponseEntity.ok(updatedBook);
