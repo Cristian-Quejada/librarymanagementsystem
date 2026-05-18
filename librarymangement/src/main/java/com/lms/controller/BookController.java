@@ -78,7 +78,7 @@ public class BookController {
     @GetMapping
     public ResponseEntity<PageResponse<BookDto>> searchBooks(
             @RequestParam(required = false) Long genreId,
-            @RequestParam(required = false) Boolean availableOnly,
+            @RequestParam(required = false, defaultValue = "false") Boolean availableOnly,
             @RequestParam(defaultValue = "true") Boolean activeOnly,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size,
