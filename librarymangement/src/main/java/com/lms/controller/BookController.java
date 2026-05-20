@@ -32,11 +32,6 @@ public class BookController {
 
     private final BookService bookService;
 
-    @PostMapping
-    public ResponseEntity<BookDto> createBook(@Valid @RequestBody BookDto bookDto) throws BookException {
-        BookDto createdBook = bookService.createBook(bookDto);
-        return ResponseEntity.ok(createdBook);
-    }
 
     @PostMapping("/bulk")
     public ResponseEntity<?> createBooksBulk(@Valid @RequestBody List<BookDto> bookDtos) throws BookException {
