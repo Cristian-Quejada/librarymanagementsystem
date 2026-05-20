@@ -12,16 +12,20 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.lms.Model.PasswordResetToken;
 import com.lms.Model.User;
 import com.lms.Service.AuthService;
+import com.lms.Service.EmailService;
 import com.lms.configurations.JwtProvider;
 import com.lms.domain.UserRole;
 import com.lms.exception.UserException;
 import com.lms.mapper.UserMapper;
 import com.lms.payload.dto.UserDto;
 import com.lms.payload.response.AuthResponse;
+import com.lms.repository.PasswordResetTokenRepository;
 import com.lms.repository.UserRepository;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -32,6 +36,9 @@ public class AuthServiceImpl implements AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtProvider jwtProvider;
     private final UserMapper userMapper;
+    private final PasswordResetTokenRepository passwordResetTokenRepository;
+
+    private final EmailService emailService;
 
     @Override
     public AuthResponse login(String email, String password) throws UserException {
@@ -42,7 +49,7 @@ public class AuthServiceImpl implements AuthService {
         //String role = authorities.iterator().next().getAuthority();
         String token = JwtProvider.generateToken(authentication);
 
-        User user = UserRepository.findByEmail(email);
+        User user = userRepository.findByEmail(email);
 
         user.setLastLogin(LocalDateTime.now());
         userRepository.save(user);
@@ -69,9 +76,9 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public AuthResponse signUp(UserDto req) throws UserException {
-        User user = UserRepository.findByEmail(req.getEmail());
+        User user = userRepository.findByEmail(req.getEmail());
 
-        if (user == null) {
+        if (user != null) {
 
             throw new UserException("Email already registered!");
         }
@@ -99,22 +106,46 @@ public class AuthServiceImpl implements AuthService {
         return response;
     }
 
-    @Override
+    @Transactional
     public void createPasswordResetToken(String email) throws UserException {
-        User user = UserRepository.findByEmail(email);
+        String frontendUrl = "";
+        User user = userRepository.findByEmail(email);
 
         if (user == null) {
             throw new UserException("User not found with email: " + email);
         }
 
         String token = UUID.randomUUID().toString();
-        
+
+        PasswordResetToken resetToken = PasswordResetToken
+                .builder()
+                .token(token)
+                .user(user)
+                .expiryDate(LocalDateTime.now().plusMinutes(5))
+                .build();
+
+            passwordResetTokenRepository.save(resetToken);
+            String resetLink = frontendUrl + token;
+            String subject = "Password Reset Request";
+            String body = "You requested a password reset. Use the link (5 minutes validity): " + resetLink;
+
+            emailService.sendEmail(user.getEmail(), subject, body);
     }
 
-    @Override
-    public void resetPassword(String token, String newPassword) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'resetPassword'");
+    @Transactional
+    public void resetPassword(String token, String newPassword) throws Exception {
+        PasswordResetToken resetToken = passwordResetTokenRepository.findByToken(token)
+                .orElseThrow(() -> new Exception("Invalid password reset token"));
+
+        if (resetToken.isExpired()) {
+            passwordResetTokenRepository.delete(resetToken);
+            throw new Exception("Password reset token has expired");
+        }
+
+        User user = resetToken.getUser();
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+        passwordResetTokenRepository.delete(resetToken);
     }
 
 }
