@@ -15,15 +15,17 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.InvalidKeyException;
 import io.jsonwebtoken.security.Keys;
 
 @Service
 public class JwtProvider {
 
-    SecretKey key = Keys.hmacShaKeyFor(JwtConstant.SECRET_KEY.getBytes());
+    static SecretKey key = Keys.hmacShaKeyFor(JwtConstant.SECRET_KEY.getBytes());
 
-    public static String generateToken(Authentication authentication) {
+    public static String generateToken(Authentication authentication) throws JwtException {
 
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
         String roles = populateAuthorities(authorities); 
@@ -54,7 +56,7 @@ public class JwtProvider {
         return String.valueOf(claims.get("email"));
     }
 
-    private String populateAuthorities(Collection<? extends GrantedAuthority> authorities) {
+    private static String populateAuthorities(Collection<? extends GrantedAuthority> authorities) {
         Set<String> auth = new HashSet<>();
 
         for (GrantedAuthority authority : authorities) {
