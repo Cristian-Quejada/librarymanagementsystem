@@ -6,11 +6,11 @@ import com.lms.payload.dto.SubscriptionPlanDto;
 
 public interface SubscriptionPlanService {
 
-    SubscriptionPlanDto createSubscriptionPlan(SubscriptionPlanDto planDto);
+    SubscriptionPlanDto createSubscriptionPlan(SubscriptionPlanDto planDto) throws Exception;
 
-    SubscriptionPlanDto updateSubscriptionPlan(Long planId, SubscriptionPlanDto planDto);
+    SubscriptionPlanDto updateSubscriptionPlan(Long planId, SubscriptionPlanDto planDto) throws Exception;
 
-    void deleteSubscriptionPlan(Long planId);
+    void deleteSubscriptionPlan(Long planId) throws Exception;
 
     List<SubscriptionPlanDto> getAllSubscriptionPlan();
 }

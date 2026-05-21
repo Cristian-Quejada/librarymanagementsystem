@@ -1,8 +1,11 @@
 package com.lms.mapper;
 
+import org.springframework.stereotype.Component;
+
 import com.lms.Model.SubscriptionPlan;
 import com.lms.payload.dto.SubscriptionPlanDto;
 
+@Component
 public class SubscriptionPlanMapper {
 
     public SubscriptionPlanDto toDto(SubscriptionPlan plan) {
