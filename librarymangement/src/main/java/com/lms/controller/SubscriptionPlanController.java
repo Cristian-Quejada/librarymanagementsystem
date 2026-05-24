@@ -47,7 +47,7 @@ public class SubscriptionPlanController {
 
     @PutMapping("/admin/{id}")
     public ResponseEntity<?> updateSubscriptionPlan(
-        @Valid @RequestBody SubscriptionPlanDto subscriptionPlanDto, @PathVariable long id) throws Exception{
+        @RequestBody SubscriptionPlanDto subscriptionPlanDto, @PathVariable long id) throws Exception{
 
         SubscriptionPlanDto plans = subscriptionPlanService.updateSubscriptionPlan(id, subscriptionPlanDto);
         return ResponseEntity.ok(plans);
