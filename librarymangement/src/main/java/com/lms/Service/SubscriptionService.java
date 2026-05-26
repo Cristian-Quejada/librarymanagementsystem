@@ -4,17 +4,20 @@ import java.util.List;
 
 import org.springframework.data.domain.Pageable;
 
+import com.lms.exception.SubscriptionException;
 import com.lms.payload.dto.SubscriptionDto;
 
 public interface SubscriptionService {
 
-    SubscriptionDto subscribe(SubscriptionDto subscriptionDto);
+    SubscriptionDto subscribe(SubscriptionDto subscriptionDto) throws Exception;
 
-    SubscriptionDto getUsersActiveSubscription(Long userId);
+    SubscriptionDto getUsersActiveSubscription(Long userId) throws SubscriptionException, Exception;
 
-    SubscriptionDto cancelSubscription(Long subscriptionId, String reason);
+    SubscriptionDto cancelSubscription(Long subscriptionId, String reason) throws SubscriptionException;
 
-    SubscriptionDto activeSubscription(Long subscriptionId, Long paymentId);
+    SubscriptionDto activateSubscription(Long subscriptionId, Long paymentId) throws SubscriptionException;
 
     List<SubscriptionDto> getAllSubscriptions(Pageable pageable);
+
+    void deactivateExpiredSubscription() throws Exception;
 }
