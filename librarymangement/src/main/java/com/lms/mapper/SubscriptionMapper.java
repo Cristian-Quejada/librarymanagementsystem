@@ -63,7 +63,7 @@ public class SubscriptionMapper {
         return dto;
     }
 
-    public Subscription toEntity(SubscriptionDto dto) throws SubscriptionException {
+    public Subscription toEntity(SubscriptionDto dto, SubscriptionPlan plan, User user) throws SubscriptionException {
         if (dto == null) {
             return null;
         }
@@ -71,30 +71,33 @@ public class SubscriptionMapper {
         Subscription subscription = new Subscription();
         subscription.setId(dto.getId());
 
-        if (dto.getUserId() != null) {
-            User user = userRepository.findById(dto.getUserId())
-                            .orElseThrow(() -> new SubscriptionException("User not found with ID:" + dto.getUserId()));
-            subscription.setUser(user);
-        }
+        subscription.setUser(user);
+        subscription.setPlan(plan);
 
-        if (dto.getPlanId() !=  null) {
-            SubscriptionPlan plan = subscriptionPlanRepository.findById(dto.getPlanId())
-                                        .orElseThrow(() -> new SubscriptionException("Subscription plan not found"));
-            subscription.setPlan(plan);
-        }
+        // if (dto.getUserId() != null) {
+        //     User user = userRepository.findById(dto.getUserId())
+        //                     .orElseThrow(() -> new SubscriptionException("User not found with ID:" + dto.getUserId()));
+        //     subscription.setUser(user);
+        // }
 
-        subscription.setPlanName(dto.getPlanName());
-        subscription.setPlanCode(dto.getPlanCode());
-        subscription.setPrice(dto.getPrice());
+        // if (dto.getPlanId() !=  null) {
+        //     SubscriptionPlan plan = subscriptionPlanRepository.findById(dto.getPlanId())
+        //                                 .orElseThrow(() -> new SubscriptionException("Subscription plan not found"));
+        //     subscription.setPlan(plan);
+        // }
 
-        subscription.setStartDate(dto.getStarDate());
-        subscription.setEndDate(dto.getEndDate());
-        subscription.setIsActive(dto.getIsActive() != null ? dto.getIsActive() : true);
-        subscription.setMaxBooksAllowed(dto.getMaxBooksAllowed());
-        subscription.setMaxDaysPerBook(dto.getMaxDaysPerBooks());
-        subscription.setAutoRenew(dto.getAutoRenew() != null ? dto.getAutoRenew() : false);
-        subscription.setCancelledAt(dto.getCancelledAt());
-        subscription.setCancellationReason(dto.getCancellationReason());
+        // subscription.setPlanName(dto.getPlanName());
+        // subscription.setPlanCode(dto.getPlanCode());
+        // subscription.setPrice(dto.getPrice());
+
+        // subscription.setStartDate(dto.getStarDate());
+        // subscription.setEndDate(dto.getEndDate());
+        // subscription.setIsActive(dto.getIsActive() != null ? dto.getIsActive() : true);
+        // subscription.setMaxBooksAllowed(dto.getMaxBooksAllowed());
+        // subscription.setMaxDaysPerBook(dto.getMaxDaysPerBooks());
+        // subscription.setAutoRenew(dto.getAutoRenew() != null ? dto.getAutoRenew() : false);
+        // subscription.setCancelledAt(dto.getCancelledAt());
+        // subscription.setCancellationReason(dto.getCancellationReason());
         subscription.setNotes(dto.getNotes());
 
         return subscription;
