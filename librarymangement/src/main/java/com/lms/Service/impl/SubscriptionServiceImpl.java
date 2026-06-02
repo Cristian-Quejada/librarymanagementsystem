@@ -4,17 +4,23 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.lms.Model.Subscription;
 import com.lms.Model.SubscriptionPlan;
 import com.lms.Model.User;
+import com.lms.Service.PaymentService;
 import com.lms.Service.SubscriptionService;
 import com.lms.Service.UserService;
+import com.lms.domain.PaymentGateway;
+import com.lms.domain.PaymentType;
 import com.lms.exception.SubscriptionException;
 import com.lms.mapper.SubscriptionMapper;
 import com.lms.payload.dto.SubscriptionDto;
+import com.lms.payload.request.PaymentInitiateRequest;
+import com.lms.payload.response.PaymentInitiateResponse;
 import com.lms.repository.SubscriptionPlanRepository;
 import com.lms.repository.SubscriptionRepository;
 
@@ -32,8 +38,10 @@ public class SubscriptionServiceImpl implements SubscriptionService{
 
     private final UserService userService;
 
+    private final PaymentService paymentService;
+
     @Override
-    public SubscriptionDto subscribe(SubscriptionDto subscriptionDto) throws Exception {
+    public PaymentInitiateResponse subscribe(SubscriptionDto subscriptionDto) throws Exception {
         User user = userService.getCurrentUser();
 
         SubscriptionPlan plan = subscriptionPlanRepository.findById(subscriptionDto.getPlanId())
@@ -44,14 +52,24 @@ public class SubscriptionServiceImpl implements SubscriptionService{
         subscription.setIsActive(false);
         Subscription savedSubscription = subscriptionRepository.save(subscription);
 
-        return subscriptionMapper.toDto(savedSubscription);
+        new PaymentInitiateResponse();
+        PaymentInitiateRequest paymentInitiateRequest = PaymentInitiateRequest
+            .builder()
+            .userId(user.getId())
+            .subscriptionId(savedSubscription.getId())
+            .paymentType(PaymentType.MEMBERSHIP)
+            .gateway(PaymentGateway.RAZORPAY)
+            .amount(savedSubscription.getPrice())
+            .description("Library description: " + plan.getName())
+            .build();
+
+        return paymentService.initiatePayment(paymentInitiateRequest);
     }
 
     @Override
     public SubscriptionDto getUsersActiveSubscription(Long userId) throws Exception {
-        User user = userService.getCurrentUser();
 
-        Subscription subscription = subscriptionRepository.findActiveSubscriptionByUserId(user.getId(), LocalDate.now())
+        Subscription subscription = subscriptionRepository.findActiveSubscriptionByUserId(userId, LocalDate.now())
                                     .orElseThrow(() -> new SubscriptionException("No Active subscription found!"));
         return subscriptionMapper.toDto(subscription);
     }
@@ -83,6 +101,10 @@ public class SubscriptionServiceImpl implements SubscriptionService{
 
         subscription.setIsActive(true);
 
+        subscription.setStartDate(LocalDateTime.now().toLocalDate());
+        // Adjust interval extension according to plan configurations if dynamic (e.g. 30 days)
+        subscription.setEndDate(LocalDateTime.now().toLocalDate().plusMonths(1)); 
+
         subscription = subscriptionRepository.save(subscription);
         return subscriptionMapper.toDto(subscription);
     }
@@ -90,9 +112,9 @@ public class SubscriptionServiceImpl implements SubscriptionService{
     @Override
     public List<SubscriptionDto> getAllSubscriptions(Pageable pageable) {
 
-        List<Subscription> subscriptions = subscriptionRepository.findAll();
+        Page<Subscription> subscriptionPage = subscriptionRepository.findAll(pageable);
 
-        return subscriptionMapper.toDtoList(subscriptions);
+        return subscriptionMapper.toDtoList(subscriptionPage);
     }
 
     @Override
