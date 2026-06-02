@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.lms.Model.Subscription;
+import com.lms.Model.SubscriptionPlan;
 
 public interface SubscriptionRepository extends JpaRepository<Subscription, Long>{
 
@@ -25,4 +26,6 @@ public interface SubscriptionRepository extends JpaRepository<Subscription, Long
     List<Subscription> findExpiredSubscriptions(
             @Param("today") LocalDate today
     );
+
+    SubscriptionPlan findByPlanCode(String subscriptionPlanCode);
 }

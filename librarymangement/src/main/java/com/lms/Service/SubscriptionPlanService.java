@@ -2,6 +2,7 @@ package com.lms.Service;
 
 import java.util.List;
 
+import com.lms.Model.SubscriptionPlan;
 import com.lms.payload.dto.SubscriptionPlanDto;
 
 public interface SubscriptionPlanService {
@@ -13,4 +14,6 @@ public interface SubscriptionPlanService {
     void deleteSubscriptionPlan(Long planId) throws Exception;
 
     List<SubscriptionPlanDto> getAllSubscriptionPlan();
+
+    SubscriptionPlan getBySubscriptionPlanCode(String subscriptionPlanCode) throws Exception;
 }

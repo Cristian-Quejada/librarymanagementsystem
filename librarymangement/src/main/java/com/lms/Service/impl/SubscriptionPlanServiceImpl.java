@@ -1,5 +1,6 @@
 package com.lms.Service.impl;
 
+import com.lms.repository.SubscriptionRepository;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -19,11 +20,15 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class SubscriptionPlanServiceImpl implements SubscriptionPlanService{
 
+    private final SubscriptionRepository subscriptionRepository;
+
     private final SubscriptionPlanRepository subscriptionPlanRepository;
 
     private final SubscriptionPlanMapper subscriptionPlanMapper;
 
     private final UserService userService;
+
+
 
     @Override
     public SubscriptionPlanDto createSubscriptionPlan(SubscriptionPlanDto planDto) throws Exception {
@@ -67,6 +72,15 @@ public class SubscriptionPlanServiceImpl implements SubscriptionPlanService{
 
         return planList.stream().map(subscriptionPlanMapper::toDto)
                         .collect(Collectors.toList());
+    }
+
+    @Override
+    public SubscriptionPlan getBySubscriptionPlanCode(String subscriptionPlanCode) throws Exception {
+        SubscriptionPlan plan = subscriptionRepository.findByPlanCode(subscriptionPlanCode);
+        if (plan == null) {
+            throw new Exception("Plan not found");
+        }
+        return plan;
     }
 
 }

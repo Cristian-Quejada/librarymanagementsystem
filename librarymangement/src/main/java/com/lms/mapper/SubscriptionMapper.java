@@ -3,6 +3,7 @@ package com.lms.mapper;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
 import com.lms.Model.Subscription;
@@ -104,11 +105,11 @@ public class SubscriptionMapper {
 
     }
 
-    public List<SubscriptionDto> toDtoList(List<Subscription> subscriptions) {
-        if (subscriptions == null) {
+    public List<SubscriptionDto> toDtoList(Page<Subscription> subscriptionPage) {
+        if (subscriptionPage == null) {
             return null;
         }
-        return subscriptions.stream()
+        return subscriptionPage.stream()
                     .map(this::toDto)
                     .collect(Collectors.toList());   
     }

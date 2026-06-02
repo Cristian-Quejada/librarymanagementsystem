@@ -7,4 +7,6 @@ import com.lms.Model.SubscriptionPlan;
 public interface SubscriptionPlanRepository extends JpaRepository<SubscriptionPlan, Long> {
 
     Boolean existsByPlanCode(String planCode);
+
+    SubscriptionPlan findByPlanCode(String planCode);
 }
