@@ -17,6 +17,7 @@ import com.lms.Service.SubscriptionService;
 import com.lms.exception.SubscriptionException;
 import com.lms.payload.dto.SubscriptionDto;
 import com.lms.payload.response.ApiResponse;
+import com.lms.payload.response.PaymentInitiateResponse;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +33,7 @@ public class SubscriptionController {
     public ResponseEntity<?> subscribe(
             @RequestBody SubscriptionDto subscription
     ) throws Exception {
-        SubscriptionDto dto = subscriptionService.subscribe(subscription);
+        PaymentInitiateResponse dto = subscriptionService.subscribe(subscription);
         return ResponseEntity.ok(dto);
     }
 
